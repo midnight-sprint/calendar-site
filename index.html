@@ -7,7 +7,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Подключаем основной шрифт и новый рукописный (Caveat) -->
+    <!-- Подключаем основной шрифт и рукописный (Caveat) -->
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -17,7 +17,7 @@
             --text-muted: #888888;
             --accent-color: #e2b4bd; 
             --accent-hover: #d98ca1;
-            --card-bg: linear-gradient(145deg, #ffffff, #fdf6f7); /* Нежный градиент */
+            --card-bg: linear-gradient(145deg, #ffffff, #fdf6f7);
             --card-shadow: 0 5px 25px rgba(0,0,0,0.04);
             --progress-bar-bg: #f0f0f0;
             --modal-bg: rgba(255, 255, 255, 0.95);
@@ -49,7 +49,7 @@
             align-items: center; 
             min-height: 100vh; 
             overflow-x: hidden; 
-            transition: background-color 0.5s ease, color 0.5s ease; /* Плавный переход тем */
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
         
         header { margin-top: 40px; text-align: center; width: 100%; position: relative; }
@@ -152,30 +152,25 @@
         .gallery-item:hover .delete-photo-btn { opacity: 1; }
         .delete-photo-btn:hover { background-color: #ff4d4d; transform: scale(1.1); }
 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: var(--modal-bg); align-items: center; justify-content: center; animation: fadeInText 0.3s; }
-        .modal-content { margin: auto; display: block; max-width: 90%; max-height: 80%; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
-        .modal-caption { text-align: center; color: var(--modal-text); padding: 15px 20px; font-size: 1.2rem; position: absolute; bottom: 5%; width: 100%; box-sizing: border-box; }
-        .close-modal { position: absolute; top: 20px; right: 35px; color: var(--text-muted); font-size: 40px; font-weight: bold; transition: color 0.3s; cursor: pointer; z-index: 1001; }
-        .close-modal:hover { color: var(--accent-color); }
-
         /* ОБЩИЕ МЕЧТЫ */
         #dreams-container { width: 100%; }
         .dream-input-area { display: flex; gap: 10px; margin-bottom: 30px; margin-top: 15px; }
         #dream-input { flex-grow: 1; padding: 15px; border-radius: 12px; border: 1px solid var(--accent-color); font-family: 'Nunito', sans-serif; font-size: 1rem; outline: none; background: transparent; color: var(--text-main); transition: box-shadow 0.3s; }
         #dream-input:focus { box-shadow: 0 0 10px rgba(226, 180, 189, 0.5); }
         
-        /* Кнопки со свечением */
         .submit-btn { background-color: var(--accent-color); color: white; border: none; padding: 12px 25px; font-size: 1rem; font-weight: bold; font-family: 'Nunito', sans-serif; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(226, 180, 189, 0.4); }
         .submit-btn:hover { background-color: var(--accent-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(226, 180, 189, 0.6); }
         .submit-btn:disabled { background-color: var(--text-muted); cursor: not-allowed; transform: none; box-shadow: none; }
         
+        /* Кнопка отмены в диалоговых окнах */
+        .cancel-btn { background-color: transparent; color: var(--text-main); border: 1px solid var(--text-muted); padding: 12px 25px; font-size: 1rem; font-weight: bold; font-family: 'Nunito', sans-serif; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; }
+        .cancel-btn:hover { background-color: rgba(136, 136, 136, 0.1); }
+
         .dreams-list { display: flex; flex-direction: column; gap: 12px; }
         .dream-item-wrapper { display: flex; align-items: center; gap: 10px; animation: fadeInText 0.4s ease; }
         
         .dream-item { flex-grow: 1; display: flex; align-items: center; gap: 15px; background: var(--card-bg); padding: 15px 20px; border-radius: 12px; box-shadow: var(--card-shadow); border-left: 4px solid var(--accent-color); cursor: pointer; transition: all 0.3s ease; }
         .dream-item:hover { transform: translateX(5px); }
-        
-        /* Стили для зачеркнутого желания */
         .dream-item.completed { border-left-color: var(--text-muted); opacity: 0.6; }
         .dream-item.completed .dream-text { text-decoration: line-through; color: var(--text-muted); }
         .dream-item.completed .dream-icon { filter: grayscale(100%); }
@@ -186,30 +181,22 @@
         .delete-dream-btn { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-muted); opacity: 0.5; transition: all 0.3s; padding: 10px; }
         .delete-dream-btn:hover { color: #ff4d4d; opacity: 1; transform: scale(1.1); }
 
+        /* МОДАЛЬНЫЕ ОКНА (Таблички) */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; animation: fadeInText 0.3s; }
+        .modal-content { margin: auto; display: block; max-width: 90%; max-height: 80%; object-fit: contain; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
+        .modal-caption { text-align: center; color: var(--modal-text); padding: 15px 20px; font-size: 1.2rem; position: absolute; bottom: 5%; width: 100%; box-sizing: border-box; }
+        .close-modal { position: absolute; top: 20px; right: 35px; color: var(--text-muted); font-size: 40px; font-weight: bold; transition: color 0.3s; cursor: pointer; z-index: 1001; }
+        .close-modal:hover { color: var(--accent-color); }
+
+        /* Табличка-подтверждение для "Открой когда" */
+        .confirm-modal-content { background: var(--card-bg); padding: 30px 20px; text-align: center; color: var(--text-main); max-width: 400px; width: 90%; border-radius: 16px; }
+        .confirm-modal-content h3 { font-family: 'Caveat', cursive; font-size: 2.5rem; color: var(--accent-color); margin: 0 0 10px 0; }
+        .confirm-modal-content p { font-size: 1.05rem; margin-bottom: 25px; color: var(--text-muted); }
+        .confirm-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+
         /* Всплывающий комплимент (Тост) */
-        #toast {
-            visibility: hidden;
-            min-width: 250px;
-            background-color: var(--accent-color);
-            color: #fff;
-            text-align: center;
-            border-radius: 8px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1000;
-            left: 50%;
-            bottom: 30px;
-            transform: translateX(-50%);
-            font-size: 1.1rem;
-            box-shadow: 0 10px 30px rgba(226, 180, 189, 0.6);
-            opacity: 0;
-            transition: opacity 0.5s, bottom 0.5s, visibility 0.5s;
-        }
-        #toast.show {
-            visibility: visible;
-            opacity: 1;
-            bottom: 50px;
-        }
+        #toast { visibility: hidden; min-width: 250px; background-color: var(--accent-color); color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 1.1rem; box-shadow: 0 10px 30px rgba(226, 180, 189, 0.6); opacity: 0; transition: opacity 0.5s, bottom 0.5s, visibility 0.5s; }
+        #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
 
         .heart { position: fixed; top: -10vh; font-size: 1.5rem; opacity: 0.8; animation: fall 10s linear infinite; z-index: -1; text-shadow: 0 0 5px rgba(255,255,255,0.3); pointer-events: none;}
         @keyframes fall { from { transform: translateY(0vh) translateX(0vw); } to { transform: translateY(110vh) translateX(5vw); opacity: 0; } }
@@ -277,6 +264,18 @@
         <div id="caption" class="modal-caption"></div>
     </div>
 
+    <!-- Модальное окно подтверждения (Табличка) -->
+    <div id="confirmModal" class="modal" style="background-color: rgba(0,0,0,0.6);">
+        <div class="confirm-modal-content">
+            <h3>Точно хочешь открыть?</h3>
+            <p>Открывай, только если ситуация действительно подходит ❤️</p>
+            <div class="confirm-buttons">
+                <button id="confirm-yes" class="submit-btn">Да, открыть</button>
+                <button id="confirm-no" class="cancel-btn">Пока нет</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Всплывающий комплимент -->
     <div id="toast">Ты потрясающая!</div>
 
@@ -285,7 +284,6 @@
         const themeToggleBtn = document.getElementById('theme-toggle');
         const body = document.body;
         
-        // Проверяем сохраненную тему
         if (localStorage.getItem('theme') === 'dark') {
             body.classList.add('dark-mode');
             themeToggleBtn.textContent = '☀️';
@@ -306,15 +304,15 @@
         const compliments = [
             "Ты молодец! ✨", "Твоя улыбка ну ВАУ 💖", 
             "Я ценю тебя 🥰", "Ты умничка, у тебя всё получится! 💪", 
-            "С тобой мне комфотрно ☕", "Ты — моё вдохновение 🌟", 
+            "С тобой мне комфортно ☕", "Ты — моё вдохновение 🌟", 
             "Рад, что ты есть в моей жизни ❤️", "Твои глаза невероятные 👀"
         ];
         
         window.onload = () => {
             const toast = document.getElementById("toast");
             toast.textContent = compliments[Math.floor(Math.random() * compliments.length)];
-            setTimeout(() => { toast.classList.add("show"); }, 1000); // Показываем через 1 сек
-            setTimeout(() => { toast.classList.remove("show"); }, 5000); // Прячем через 5 сек
+            setTimeout(() => { toast.classList.add("show"); }, 1000); 
+            setTimeout(() => { toast.classList.remove("show"); }, 5000); 
         };
 
         // --- 1. МАГИЯ FIREBASE ---
@@ -334,14 +332,11 @@
         // ФУНКЦИЯ ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК (С АНИМАЦИЕЙ)
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            
-            // Сначала убираем активный класс у всех секций (запускает анимацию скрытия)
             const sections = document.querySelectorAll('.content-section');
             sections.forEach(sec => sec.classList.remove('active'));
             
             event.currentTarget.classList.add('active');
             
-            // Небольшая задержка перед показом новой секции для плавности
             setTimeout(() => {
                 document.getElementById(tabId).classList.add('active');
                 document.getElementById('progress-wrapper').style.display = (tabId === 'calendar') ? 'block' : 'none';
@@ -449,7 +444,6 @@
                 const wrapperEl = document.createElement('div');
                 wrapperEl.className = 'dream-item-wrapper';
                 
-                // Проверяем, выполнено ли желание (добавляем класс completed)
                 const isCompletedClass = dream.completed ? 'completed' : '';
                 
                 wrapperEl.innerHTML = `
@@ -460,21 +454,14 @@
                     <button class="delete-dream-btn" title="Удалить насовсем">✖</button>
                 `;
                 
-                // Обработчик ЗАЧЕРКИВАНИЯ (Обновляем статус в Firebase)
                 const itemEl = wrapperEl.querySelector('.dream-item');
                 itemEl.addEventListener('click', () => {
-                    // Переключаем статус (если было true, станет false, и наоборот)
                     const newStatus = !dream.completed; 
-                    db.collection('shared_wishes').doc(docId).update({
-                        completed: newStatus
-                    });
+                    db.collection('shared_wishes').doc(docId).update({ completed: newStatus });
                 });
 
-                // Обработчик УДАЛЕНИЯ
                 wrapperEl.querySelector('.delete-dream-btn').addEventListener('click', () => {
-                    if (confirm("Удалить это желание навсегда?")) {
-                        db.collection('shared_wishes').doc(docId).delete();
-                    }
+                    if (confirm("Удалить это желание навсегда?")) db.collection('shared_wishes').doc(docId).delete();
                 });
 
                 dreamsList.appendChild(wrapperEl);
@@ -487,10 +474,7 @@
                 const icons = ['✨', '💖', '✈️', '🍕', '🎬', '🏡', '🌅', '🏕️', '🚗'];
                 const randomIcon = icons[Math.floor(Math.random() * icons.length)];
                 db.collection('shared_wishes').add({ 
-                    text: text, 
-                    icon: randomIcon,
-                    completed: false, // Новое желание по умолчанию не выполнено
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+                    text: text, icon: randomIcon, completed: false, timestamp: firebase.firestore.FieldValue.serverTimestamp() 
                 });
                 dreamInput.value = ''; 
             }
@@ -505,7 +489,18 @@
         const STORAGE_KEY_EVENTS = 'openedEventItems';
         
         const calendarPhrases = [ "Ты реально slay💅", "Люблю твои глаза 💚", "С тобой мне всегда тепло ❤️‍🔥", "Ты делаешь меня счастливее 😄", "Я очень ценю тебя 🥰", "У тебя потрясающие духи 😉", "Скучаю по тебе каждую минуту 🕐", "Ты самая родная 🤗", "Люблю твой смех🤭", "Да ты меня мотивируешь 😈", "Мне с тобой легко Реально", "Я всегда на твоей стороне 🤍", "Ты невероятная умничка 😎", "Обожаю обнимать тебя 🫂", "Твой голос меня успокаивает 😌", "Ты просто ВАУ 😎 ", "С тобой каждый день особенный 💯", "Я люблю в тебе всё 💯", "Ты - мой лучик света ☀️", "Мне нравится мечтать с тобой 🤔", "Я так горжусь тобой 🫡", "Ты делаешь мир лучше 🫶", "Обожаю то, как ты смотришь на мир (и иногда на меня)", "С тобой я первый раз был пикми и собачкой 🐶", "Люблю, что ты открываешь мне свои самые сокровенные мысли 💭", "Спасибо, что ты есть ❤️", "Я люблю твои волосы ❤️‍🔥", "Люблю тебя за то, что рядом с тобой я чувствую себя на своем месте 🥇", "Ты заставляешь меня улыбаться 😁", "Люблю тебя за тот день 📦", `Настя,\n\nЕсли ты открыла это, значит, наступил последний день календаря. Но это не конец, а может начало чего-то большего.\n\nКаждый день с тобой и открываю в тебе новые поводы для восхищения, новые причины любить тебя ещё сильнее. Ты дала мне то чего у меня никогда не было\n\nЯ не знаю, что ждёт нас впереди, но я знаю одно: я хочу пройти этот путь с тобой. Держа тебя за руку, делить радости и поддерживать в трудностях, вместе смеяться и просто молчать.\n\nСпасибо тебе за всё. За твою улыбку, поддержку, которая придаёт мне сил. И за твою любовь, которая мотивирует и вдохновляет меня. \n\n Люблю тебя ❤️`];
-        const eventPhrases = [{ title: "😢 Открой, когда тебе грустно", message: "Закрой глазки и представь, что я сейчас крепко тебя обнимаю. Всё обязательно будет хорошо. Люблю тебя!" }, { title: "😠 Открой, когда ты злишься или обиделась на меня", message: "Прости меня, пожалуйста. Я бываю глупым и придурошным, но я никогда не хочу делать тебе больно 🥺 " }, { title: "🤔 Открой, когда сомневаешься в себе", message: "Ты Умничка же! Умная, красивая, талантливая и невероятно сильная. Я верю в тебя на 1000%. У тебя всё обязательно получится, просто сделай вдох и шагни вперед." }, { title: "😴 Открой, когда ты устала", message: "Отложи все дела. Ты отлично поработала, ты большая молодец. Сделай свой любимый зеленый чай, укутайся в серый плед, включи фильм или сериал и Отдохни." }, { title: "✈️ Открой, когда мы далеко друг от друга и ты скучаешь", message: "Я тоже очень скучаюююю. Скоро увидмся 🫂" }, { title: "🌙 Открой, когда не можешь уснуть", message: "Подумай о чем-нибудь хорошем. Не думай о завтрашнем дне, если он тяжелый. Ну и в конце концов переляг на другую сторону кровати 😉. Спокойной ночи ❤️" }];
+        
+        // ОБНОВЛЕННЫЕ И НОВЫЕ ФРАЗЫ (8 ШТУК)
+        const eventPhrases = [
+            { title: "😢 Открой, когда тебе грустно", message: "Закрой глазки и представь, что я сейчас крепко тебя обнимаю. Всё обязательно будет хорошо. Люблю тебя!" }, 
+            { title: "😠 Открой, когда ты злишься или обиделась на меня", message: "Прости меня, пожалуйста. Я бываю глупым и придурошным, но я никогда не хочу делать тебе больно 🥺 " }, 
+            { title: "🤔 Открой, когда сомневаешься в себе", message: "Ты Умничка же! Умная, красивая, талантливая и невероятно сильная. Я верю в тебя на 1000%. У тебя всё обязательно получится, просто сделай вдох и шагни вперед." }, 
+            { title: "😴 Открой, когда ты устала", message: "Отложи все дела. Ты отлично поработала, ты большая молодец. Сделай свой любимый зеленый чай, укутайся в серый плед, включи фильм или сериал и Отдохни." }, 
+            { title: "✈️ Открой, когда мы далеко друг от друга и ты скучаешь", message: "Я тоже очень скучаюююю. Скоро увидимся 🫂" }, 
+            { title: "🌙 Открой, когда не можешь уснуть", message: "Подумай о чем-нибудь хорошем. Не думай о завтрашнем дне, если он тяжелый. Ну и в конце концов переляг на другую сторону кровати 😉. Спокойной ночи ❤️" },
+            { title: "🥺 Открой, когда чувствуешь себя одиноко", message: "Помни, что у тебя есть я. Даже если я сейчас не рядом, мысленно я держу тебя за руку. Напиши или позвони мне в любую минуту." },
+            { title: "💖 Открой, когда просто хочется улыбнуться", message: "Вспомни нашу самую смешную шутку или забавный момент! А еще знай, что прямо сейчас я думаю о тебе и улыбаюсь." }
+        ];
 
         const progressBar = document.getElementById('progress-bar');
         const progressLabel = document.getElementById('progress-text-label');
@@ -541,18 +536,50 @@
         });
         updateProgressBar(openedCalendarCards.filter(i => i < totalCardsForProgress).length);
         
+        // --- ЛОГИКА "ОТКРОЙ КОГДА" И ОКНО ПОДТВЕРЖДЕНИЯ ---
         const eventsContainer = document.getElementById('events-container');
         const openedEventItems = JSON.parse(localStorage.getItem(STORAGE_KEY_EVENTS)) || [];
+        
+        // Переменная для хранения действия, которое ждет подтверждения
+        let pendingEventAction = null;
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmYes = document.getElementById('confirm-yes');
+        const confirmNo = document.getElementById('confirm-no');
+
+        // Логика кнопок в табличке подтверждения
+        confirmYes.addEventListener('click', () => {
+            if (pendingEventAction) pendingEventAction();
+            confirmModal.style.display = 'none';
+        });
+        confirmNo.addEventListener('click', () => {
+            pendingEventAction = null;
+            confirmModal.style.display = 'none';
+        });
+
         eventPhrases.forEach((item, index) => {
             const eventBlock = document.createElement('div'); eventBlock.className = 'event-item';
             eventBlock.innerHTML = `<h3 class="event-title">${item.title}</h3><div class="event-message">${item.message}</div>`;
+            
             if (openedEventItems.includes(index)) eventBlock.classList.add('opened');
+            
             eventBlock.addEventListener('click', () => {
-                eventBlock.classList.toggle('opened');
-                const indexInStorage = openedEventItems.indexOf(index);
-                if (indexInStorage > -1) openedEventItems.splice(indexInStorage, 1);
-                else openedEventItems.push(index);
-                localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(openedEventItems));
+                const isAlreadyOpen = eventBlock.classList.contains('opened');
+                
+                if (isAlreadyOpen) {
+                    // Если уже открыто, просто закрываем обратно (без вопроса)
+                    eventBlock.classList.remove('opened');
+                    const indexInStorage = openedEventItems.indexOf(index);
+                    if (indexInStorage > -1) openedEventItems.splice(indexInStorage, 1);
+                    localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(openedEventItems));
+                } else {
+                    // Если закрыто, показываем табличку-подтверждение
+                    pendingEventAction = () => {
+                        eventBlock.classList.add('opened');
+                        openedEventItems.push(index);
+                        localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(openedEventItems));
+                    };
+                    confirmModal.style.display = 'flex';
+                }
             });
             eventsContainer.appendChild(eventBlock);
         });
