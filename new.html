@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Для тебя ❤️</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fff9fb;
+            --text-main: #333333;
+            --text-muted: #888888;
+            --accent-color: #e2b4bd; 
+            --card-bg: #ffffff;
+            --progress-bar-bg: #f0f0f0;
+        }
+        body { font-family: 'Nunito', 'Helvetica Neue', Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0 0 50px 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; overflow-x: hidden; }
+        header { margin-top: 40px; text-align: center; width: 100%; position: relative; }
+        h1 { font-weight: 300; letter-spacing: 2px; margin-bottom: 5px; }
+        .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 15px; }
+        
+        .tabs { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px; max-width: 900px;}
+        .tab-btn { background: none; border: none; font-size: 1.05rem; font-family: 'Nunito', sans-serif; color: var(--text-muted); cursor: pointer; padding: 10px 15px; border-bottom: 2px solid transparent; transition: all 0.3s ease; }
+        .tab-btn.active { color: var(--text-main); border-bottom: 2px solid var(--accent-color); font-weight: 700; }
+        
+        #progress-wrapper { width: 100%; max-width: 800px; padding: 0 20px; box-sizing: border-box; margin-bottom: 30px; text-align: center; font-size: 0.9rem; color: var(--text-muted); }
+        #progress-container { width: 100%; background-color: var(--progress-bar-bg); border-radius: 10px; margin-top: 8px; overflow: hidden; height: 12px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.08); }
+        #progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #e2b4bd, #d98ca1); border-radius: 10px; transition: width 0.5s ease-in-out; }
+        
+        .content-section { display: none; width: 100%; max-width: 800px; padding: 0 20px; box-sizing: border-box; animation: fadeIn 0.5s ease; }
+        .content-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* КАЛЕНДАРЬ */
+        .calendar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 20px; margin-bottom: 50px; }
+        .card { background-color: var(--card-bg); border-radius: 12px; padding: 20px 10px; text-align: center; cursor: pointer; box-shadow: 0 5px 25px rgba(0,0,0,0.04); transition: transform 0.3s ease, box-shadow 0.3s ease; position: relative; min-height: 100px; display: flex; align-items: center; justify-content: center; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 30px rgba(184, 131, 142, 0.15); }
+        .card:last-child { grid-column: 1 / -1; min-height: 250px; align-items: flex-start; text-align: left; padding: 25px; }
+        .card-number { font-size: 1.8rem; color: var(--accent-color); font-weight: bold; transition: opacity 0.3s; }
+        .card-text { font-size: 1rem; display: none; padding: 5px; width: 100%; }
+        .card:last-child .card-text { font-size: 1.1rem; line-height: 1.6; white-space: pre-wrap; }
+        .card.opened { background-color: #fffefd; cursor: default; }
+        .card.opened:hover { transform: none; box-shadow: 0 5px 25px rgba(0,0,0,0.04); }
+        .card.opened .card-number { display: none; }
+        .card.opened .card-text { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } }
+        .shake { animation: shake 0.4s ease; }
+        
+        /* СОБЫТИЯ */
+        .event-list { display: flex; flex-direction: column; gap: 15px; margin-bottom: 50px; }
+        .event-item { background-color: var(--card-bg); border-radius: 12px; padding: 20px; cursor: pointer; box-shadow: 0 5px 25px rgba(0,0,0,0.04); transition: all 0.3s ease; }
+        .event-item:hover { box-shadow: 0 8px 30px rgba(184, 131, 142, 0.15); }
+        .event-title { font-weight: 500; color: var(--text-main); margin: 0; display: flex; justify-content: space-between; align-items: center; }
+        .event-title::after { content: '▾'; font-size: 1.5rem; color: var(--accent-color); transition: transform 0.3s ease;}
+        .event-item.opened .event-title::after { content: '▴'; }
+        .event-message { margin-top: 15px; color: #555; font-size: 0.95rem; line-height: 1.5; display: none; padding-top: 15px; border-top: 1px solid #f0f0f0; }
+        .event-item.opened .event-message { display: block; animation: fadeIn 0.4s ease; }
+        
+        /* ГАЛЕРЕЯ (ОБЩАЯ) */
+        .gallery-upload-area { display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px; background: var(--card-bg); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .gallery-controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        input[type="file"] { display: none; }
+        .custom-file-upload { border: 2px dashed var(--accent-color); display: inline-block; padding: 12px 20px; cursor: pointer; border-radius: 8px; color: var(--accent-color); font-weight: bold; transition: all 0.3s; text-align: center; flex-grow: 1; }
+        .custom-file-upload:hover { background: #fdeef1; }
+        #gallery-caption { flex-grow: 2; padding: 12px 15px; border-radius: 8px; border: 1px solid #ddd; outline: none; font-family: 'Nunito', sans-serif; min-width: 200px; }
+        #gallery-caption:focus { border-color: var(--accent-color); }
+        
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .gallery-item { background-color: var(--card-bg); border-radius: 12px; box-shadow: 0 5px 25px rgba(0,0,0,0.04); cursor: pointer; overflow: hidden; position: relative; animation: fadeIn 0.5s ease; }
+        .gallery-item img { display: block; width: 100%; height: 200px; object-fit: cover; transition: transform 0.4s ease; }
+        .gallery-item:hover img { transform: scale(1.05); }
+        .gallery-caption-text { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); color: white; padding: 30px 15px 15px; font-size: 0.9rem; transform: translateY(100%); transition: transform 0.4s ease; }
+        .gallery-item:hover .gallery-caption-text { transform: translateY(0); }
+        
+        /* НОВИНКА: Кнопка удаления фото */
+        .delete-photo-btn { position: absolute; top: 10px; right: 10px; background-color: rgba(255, 255, 255, 0.85); border: none; border-radius: 50%; width: 35px; height: 35px; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0.6; transition: all 0.3s ease; z-index: 10; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .gallery-item:hover .delete-photo-btn { opacity: 1; }
+        .delete-photo-btn:hover { background-color: #ff4d4d; color: white; transform: scale(1.1); }
+
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.85); align-items: center; justify-content: center; animation: fadeIn 0.3s; }
+        .modal-content { margin: auto; display: block; max-width: 90%; max-height: 80%; object-fit: contain; border-radius: 8px;}
+        .modal-caption { text-align: center; color: #fff; padding: 15px 20px; font-size: 1.2rem; position: absolute; bottom: 5%; width: 100%; box-sizing: border-box; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .close-modal { position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; font-weight: bold; transition: 0.3s; cursor: pointer; z-index: 1001; }
+
+        /* ОБЩИЕ МЕЧТЫ (FIREBASE) */
+        #dreams-container { width: 100%; }
+        .dream-input-area { display: flex; gap: 10px; margin-bottom: 30px; margin-top: 15px; }
+        #dream-input { flex-grow: 1; padding: 15px; border-radius: 12px; border: 1px solid #e2b4bd; font-family: 'Nunito', sans-serif; font-size: 1rem; outline: none; box-shadow: inset 0 2px 5px rgba(0,0,0,0.02); }
+        #dream-input:focus { border-color: #d98ca1; box-shadow: 0 0 8px rgba(226, 180, 189, 0.4); }
+        .submit-btn { background-color: var(--accent-color); color: white; border: none; padding: 12px 25px; font-size: 1rem; font-weight: bold; font-family: 'Nunito', sans-serif; border-radius: 12px; cursor: pointer; transition: background-color 0.3s ease; box-shadow: 0 4px 15px rgba(226, 180, 189, 0.4); }
+        .submit-btn:hover { background-color: #d98ca1; transform: translateY(-2px); }
+        .submit-btn:disabled { background-color: #ccc; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        .dreams-list { display: flex; flex-direction: column; gap: 12px; }
+        .dream-item { display: flex; align-items: center; gap: 15px; background-color: var(--card-bg); padding: 15px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); animation: fadeIn 0.4s ease; border-left: 4px solid var(--accent-color); }
+        .dream-text { font-size: 1.05rem; color: var(--text-main); }
+        .dream-icon { font-size: 1.5rem; }
+
+        .heart { position: fixed; top: -10vh; font-size: 1.5rem; opacity: 0.8; animation: fall 10s linear infinite; z-index: -1; text-shadow: 0 0 5px rgba(255,255,255,0.5); }
+        @keyframes fall { from { transform: translateY(0vh) translateX(0vw); } to { transform: translateY(110vh) translateX(5vw); opacity: 0; } }
+    </style>
+    
+    <!-- ПОДКЛЮЧАЕМ БИБЛИОТЕКИ FIREBASE -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Только для тебя</h1>
+        <div class="subtitle">Немного тепла на каждый день</div>
+    </header>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('calendar')">🗓️ Календарь</button>
+        <button class="tab-btn" onclick="switchTab('events')">💌 Открой, когда...</button>
+        <button class="tab-btn" onclick="switchTab('gallery')">📸 Галерея</button>
+        <button class="tab-btn" style="color: var(--accent-color);" onclick="switchTab('dreams')">✨ Наши мечты</button>
+    </div>
+
+    <div id="progress-wrapper">
+        <span id="progress-text-label"></span>
+        <div id="progress-container"><div id="progress-bar"></div></div>
+    </div>
+
+    <div id="calendar" class="content-section active"><div class="calendar-grid" id="calendar-container"></div></div>
+    <div id="events" class="content-section"><div class="event-list" id="events-container"></div></div>
+    
+    <!-- СЕКЦИЯ ГАЛЕРЕИ (ОБЩАЯ) -->
+    <div id="gallery" class="content-section">
+        <div class="gallery-upload-area">
+            <h3 style="margin: 0 0 10px 0; font-weight: 500; text-align: center;">Добавить воспоминание</h3>
+            <div class="gallery-controls">
+                <label for="gallery-file" class="custom-file-upload" id="file-label">
+                    📷 Выбрать фото
+                </label>
+                <input type="file" id="gallery-file" accept="image/*">
+                <input type="text" id="gallery-caption" placeholder="Милая подпись (необязательно)..." autocomplete="off">
+                <button class="submit-btn" id="upload-photo-btn">Загрузить</button>
+            </div>
+        </div>
+        <div class="gallery-grid" id="gallery-container">
+            <!-- Фотографии из базы будут здесь -->
+        </div>
+    </div>
+    
+    <!-- СЕКЦИЯ ОБЩИХ МЕЧТ (FIREBASE) -->
+    <div id="dreams" class="content-section">
+        <div id="dreams-container">
+            <h3 style="text-align: center; font-weight: 400;">Чего бы нам хотелось сделать вместе?</h3>
+            <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem;">Впиши сюда желание, и оно мгновенно появится у нас обоих.</p>
+            
+            <div class="dream-input-area">
+                <input type="text" id="dream-input" placeholder="Например: Поехать на море на выходные..." autocomplete="off">
+                <button class="submit-btn" id="add-dream-btn">Добавить</button>
+            </div>
+            
+            <div id="dreams-list" class="dreams-list">
+                <!-- Мечты будут загружаться сюда из Firebase -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно для галереи -->
+    <div id="myModal" class="modal">
+        <span class="close-modal" onclick="document.getElementById('myModal').style.display='none'">&times;</span>
+        <img class="modal-content" id="img01">
+        <div id="caption" class="modal-caption"></div>
+    </div>
+
+    <script>
+        // --- 1. МАГИЯ FIREBASE (ТВОИ КЛЮЧИ) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyA0ayVqmo-OJYKFT5gi9Yg2p_eYziWer4Q",
+            authDomain: "our-secret-place-final.firebaseapp.com",
+            projectId: "our-secret-place-final",
+            storageBucket: "our-secret-place-final.firebasestorage.app",
+            messagingSenderId: "812969415384",
+            appId: "1:812969415384:web:1bda92966c624d19a47dad",
+            measurementId: "G-DXSFLWK0P0"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // --- 2. ЛОГИКА ОБЩЕЙ ГАЛЕРЕИ (FIREBASE) ---
+        const galleryContainer = document.getElementById('gallery-container');
+        const fileInput = document.getElementById('gallery-file');
+        const fileLabel = document.getElementById('file-label');
+        const captionInput = document.getElementById('gallery-caption');
+        const uploadBtn = document.getElementById('upload-photo-btn');
+        const modal = document.getElementById("myModal");
+        const modalImg = document.getElementById("img01");
+        const captionText = document.getElementById("caption");
+
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                fileLabel.textContent = "✅ Фото выбрано";
+                fileLabel.style.borderColor = "green";
+                fileLabel.style.color = "green";
+            } else {
+                fileLabel.textContent = "📷 Выбрать фото";
+                fileLabel.style.borderColor = "var(--accent-color)";
+                fileLabel.style.color = "var(--accent-color)";
+            }
+        });
+
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = event => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_SIZE = 800;
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > height) {
+                        if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+                    } else {
+                        if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                    callback(dataUrl);
+                };
+            };
+        }
+
+        uploadBtn.addEventListener('click', () => {
+            const file = fileInput.files[0];
+            const caption = captionInput.value.trim();
+            
+            if (!file) {
+                alert("Пожалуйста, выбери фотографию!");
+                return;
+            }
+
+            uploadBtn.textContent = 'Грузим...';
+            uploadBtn.disabled = true;
+
+            compressImage(file, (base64Image) => {
+                db.collection('shared_gallery').add({
+                    image: base64Image,
+                    caption: caption,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    fileInput.value = '';
+                    captionInput.value = '';
+                    fileLabel.textContent = "📷 Выбрать фото";
+                    fileLabel.style.borderColor = "var(--accent-color)";
+                    fileLabel.style.color = "var(--accent-color)";
+                    uploadBtn.textContent = 'Загрузить';
+                    uploadBtn.disabled = false;
+                }).catch((error) => {
+                    console.error("Ошибка загрузки: ", error);
+                    alert("Произошла ошибка. Проверь базу данных!");
+                    uploadBtn.textContent = 'Загрузить';
+                    uploadBtn.disabled = false;
+                });
+            });
+        });
+
+        // НОВИНКА: Чтение и УДАЛЕНИЕ фото из базы
+        db.collection('shared_gallery').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
+            galleryContainer.innerHTML = ''; 
+            
+            if (snapshot.empty) {
+                galleryContainer.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #888;">Пока нет ни одной фотографии. Добавьте первую! ❤️</p>';
+                return;
+            }
+
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const docId = doc.id; // ID документа в Firebase
+                const galleryDiv = document.createElement('div');
+                galleryDiv.className = 'gallery-item';
+                
+                const captionHtml = data.caption ? `<div class="gallery-caption-text">${data.caption}</div>` : '';
+                
+                // Добавили кнопку удаления 🗑️
+                galleryDiv.innerHTML = `
+                    <button class="delete-photo-btn" title="Удалить фото">🗑️</button>
+                    <img src="${data.image}" alt="Фото"> 
+                    ${captionHtml}
+                `;
+                
+                // Логика нажатия на кнопку удаления
+                const deleteBtn = galleryDiv.querySelector('.delete-photo-btn');
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Чтобы при клике на корзину не открывалось фото
+                    
+                    if (confirm("Точно хочешь удалить эту фотографию навсегда?")) {
+                        db.collection('shared_gallery').doc(docId).delete().catch(error => {
+                            console.error("Ошибка удаления: ", error);
+                            alert("Не удалось удалить фотографию.");
+                        });
+                    }
+                });
+
+                // Открытие модального окна по клику на саму картинку
+                galleryDiv.addEventListener('click', () => {
+                    modal.style.display = "flex";
+                    modalImg.src = data.image;
+                    captionText.innerHTML = data.caption || '❤️';
+                });
+                
+                galleryContainer.appendChild(galleryDiv);
+            });
+        });
+
+
+        // --- 3. ЛОГИКА ОБЩИХ МЕЧТ (REALTIME) ---
+        const dreamsList = document.getElementById('dreams-list');
+        const dreamInput = document.getElementById('dream-input');
+        const addDreamBtn = document.getElementById('add-dream-btn');
+
+        db.collection('shared_wishes').orderBy('timestamp', 'desc').onSnapshot((snapshot) => {
+            dreamsList.innerHTML = ''; 
+            snapshot.forEach((doc) => {
+                const dream = doc.data();
+                const dreamEl = document.createElement('div');
+                dreamEl.className = 'dream-item';
+                const icons = ['✨', '💖', '✈️', '🍕', '🎬', '🏡', '🌅'];
+                const randomIcon = icons[Math.floor(Math.random() * icons.length)];
+                dreamEl.innerHTML = `<div class="dream-icon">${randomIcon}</div> <div class="dream-text">${dream.text}</div>`;
+                dreamsList.appendChild(dreamEl);
+            });
+        });
+
+        function sendDream() {
+            const text = dreamInput.value.trim();
+            if (text) {
+                db.collection('shared_wishes').add({ text: text, timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                dreamInput.value = ''; 
+            }
+        }
+        addDreamBtn.addEventListener('click', sendDream);
+        dreamInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendDream(); });
+
+
+        // --- 4. ОСТАЛЬНАЯ ЛОГИКА САЙТА (Календарь и т.д.) ---
+        const TARGET_MONTH = 2; // Март
+        const STORAGE_KEY_CALENDAR = 'openedCalendarCards';
+        const STORAGE_KEY_EVENTS = 'openedEventItems';
+        
+        const calendarPhrases = [ "Ты самая прям slay💅", "Люблю твои глаза 💚", "С тобой мне всегда тепло ❤️‍🔥", "Ты делаешь меня счастливее 😄", "Я очень ценю тебя", "У тебя потрясающие духи 😉", "Скучаю по тебе каждую минуту 🕐", "Ты мой самая родная 🤗", "Да я люблю твой смех🤭", "Да ты меня мотивируешь 😈", "Мне с тобой легко Реально", "Я всегда на твоей стороне 🤍", "Ты невероятная умничка 😎", "Обожаю обнимать тебя 🫂", "Твой голос меня успокаивает 😌", "Ты моё Маленькое чудо ", "С тобой каждый день особенный 💯", "Я люблю в тебе всё 💯💯", "Ты - мой лучик света ☀️", "Мне нравится мечтать с тобой 🤔", "Я так горжусь тобой 🫡", "Ты делаешь мир лучше 🫶", "Обожаю то, как ты смотришь на мир (и иногда на меня)", "С тобой я первый раз был пикми и собачкой 🐶", "Люблю, что ты открываешь мне свои самые сокровенные мысли 💭", "Спасибо, что ты есть ❤️", "Я люблю твои волосы ❤️‍🔥", "Люблю тебя за то, что рядом с тобой я чувствую себя на своем месте 🥇", "Ты заставляешь меня улыбаться 😁", "Люблю тебя за тот день 📦", `Моя самая дорогая,\n\nЕсли ты открыла это, значит, наступил последний день нашего маленького календаря. Но это не конец, а только начало чего-то большего.\n\nКаждый день с тобой — это открытие. Я открываю в тебе новые поводы для восхищения, новые причины любить тебя ещё сильнее. Ты научила меня смотреть на мир по-другому, замечать красоту в мелочах и верить в то, что всё возможно.\n\nЯ не знаю, что ждёт нас впереди, но я знаю одно: я хочу пройти этот путь с тобой. Держа тебя за руку, делить радости и поддерживать в трудностях, вместе смеяться до слёз и просто молчать, зная, что мы рядом.\n\nСпасибо тебе за всё. За твою улыбку, которая освещает мой день. За твою поддержку, которая придаёт мне сил. За твою любовь, которая делает меня самым счастливым человеком на свете.\n\nЭто не просто письмо. Это обещание. Обещание быть рядом, заботиться, понимать и любить. Всегда.`];
+        const eventPhrases = [{ title: "😢 Открой, когда тебе грустно", message: "Милая, закрой глазки и представь, что я сейчас крепко-крепко тебя обнимаю. Всё обязательно наладится. Я рядом, даже если сейчас я не близко. Люблю тебя!" }, { title: "😠 Открой, когда ты злишься или обиделась на меня", message: "Прости меня, пожалуйста. Я бываю глупым и неидеальным, но я никогда не хочу делать тебе больно. Ты самое дорогое, что у меня есть. Давай помиримся? 🥺" }, { title: "🤔 Открой, когда сомневаешься в себе", message: "Ты потрясающая! Умная, красивая, талантливая и невероятно сильная. Я верю в тебя на 1000%. У тебя всё обязательно получится, просто сделай вдох и шагни вперед." }, { title: "😴 Открой, когда ты устала", message: "Отложи все дела. Мир не рухнет, если ты немного отдохнешь. Ты отлично потрудилась, ты большая молодец. Завари вкусный чай, укутайся в плед и позволь себе расслабиться." }, { title: "✈️ Открой, когда мы далеко друг от друга и ты скучаешь", message: "Я тоже очень скучаю. Считаю часы до нашей встречи. Но помни, что расстояния — это просто километры, а в мыслях и в сердце я каждую секунду с тобой." }, { title: "🌙 Открой, когда не можешь уснуть", message: "Я мысленно целую тебя в носик, лоб и щечки. Подумай о чем-нибудьंपूर्дишь о чем-нибудь хорошем, например, о нашем самом веселом свидании. Спокойной ночи, моя принцесса ✨" }];
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.content-section').forEach(sec => sec.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('progress-wrapper').style.display = (tabId === 'calendar') ? 'block' : 'none';
+        }
+
+        const progressBar = document.getElementById('progress-bar');
+        const progressLabel = document.getElementById('progress-text-label');
+        const totalCardsForProgress = calendarPhrases.length - 1;
+        function updateProgressBar(openedCount) {
+            const percentage = (openedCount / totalCardsForProgress) * 100;
+            progressBar.style.width = `${Math.min(percentage, 100)}%`;
+            progressLabel.textContent = `Открыто ${openedCount} из ${totalCardsForProgress} посланий`;
+        }
+        
+        const calendarContainer = document.getElementById('calendar-container');
+        const openedCalendarCards = JSON.parse(localStorage.getItem(STORAGE_KEY_CALENDAR)) || [];
+        calendarPhrases.forEach((phrase, index) => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            const dayNumber = index + 1;
+            card.innerHTML = `<div class="card-number">${dayNumber}</div><div class="card-text">${phrase}</div>`;
+            if (openedCalendarCards.includes(index)) card.classList.add('opened');
+            card.addEventListener('click', () => {
+                if (card.classList.contains('opened')) return;
+                const today = new Date();
+                const isUnlocked = today.getMonth() > TARGET_MONTH || (today.getMonth() === TARGET_MONTH && today.getDate() >= dayNumber);
+                if (isUnlocked) {
+                    card.classList.add('opened');
+                    if (!openedCalendarCards.includes(index)) {
+                        openedCalendarCards.push(index);
+                        localStorage.setItem(STORAGE_KEY_CALENDAR, JSON.stringify(openedCalendarCards));
+                        if (index < totalCardsForProgress) updateProgressBar(openedCalendarCards.filter(i => i < totalCardsForProgress).length);
+                    }
+                } else {
+                    card.classList.add('shake');
+                    setTimeout(() => card.classList.remove('shake'), 400);
+                    alert(`Ещё рано! 🤫 Дождись ${dayNumber} марта, чтобы открыть это послание.`);
+                }
+            });
+            calendarContainer.appendChild(card);
+        });
+        updateProgressBar(openedCalendarCards.filter(i => i < totalCardsForProgress).length);
+        
+        const eventsContainer = document.getElementById('events-container');
+        const openedEventItems = JSON.parse(localStorage.getItem(STORAGE_KEY_EVENTS)) || [];
+        eventPhrases.forEach((item, index) => {
+            const eventBlock = document.createElement('div');
+            eventBlock.className = 'event-item';
+            eventBlock.innerHTML = `<h3 class="event-title">${item.title}</h3><div class="event-message">${item.message}</div>`;
+            if (openedEventItems.includes(index)) eventBlock.classList.add('opened');
+            eventBlock.addEventListener('click', () => {
+                eventBlock.classList.toggle('opened');
+                const indexInStorage = openedEventItems.indexOf(index);
+                if (indexInStorage > -1) openedEventItems.splice(indexInStorage, 1);
+                else openedEventItems.push(index);
+                localStorage.setItem(STORAGE_KEY_EVENTS, JSON.stringify(openedEventItems));
+            });
+            eventsContainer.appendChild(eventBlock);
+        });
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.innerText = ['❤️', '💕', '💖', '✨', '💓'][Math.floor(Math.random() * 5)];
+            heart.classList.add('heart');
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.animationDuration = Math.random() * 8 + 12 + 's';
+            heart.style.opacity = Math.random() * 0.5 + 0.3;
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 20000);
+        }
+        setInterval(createHeart, 900);
+    </script>
+</body>
+</html>
